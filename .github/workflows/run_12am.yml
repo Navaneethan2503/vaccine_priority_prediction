@@ -24,4 +24,4 @@ jobs:
         run: pip install sklearn requests pymongo dnspython # pandas matplotlib graphviz
 
       - name: run 12am.py
-        run: python ./12am.py
+        run: python3 ./12am.py
