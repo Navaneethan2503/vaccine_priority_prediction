@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: installing requirements
-        run: pip3 install sklearn requests pymongo dnspython # pandas matplotlib graphviz
+        run: pip3 install setuptools sklearn requests pymongo dnspython # pandas matplotlib graphviz
 
       - name: run 12am.py
         run: python3 ./12am.py
