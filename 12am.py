@@ -1,19 +1,19 @@
 from itertools import chain
 import pickle
+import pymongo
 import requests
 
 model_pkl_filename = "model.pkl"
 with open(model_pkl_filename, 'rb') as file:
     model = pickle.load(file)
 
-URL = "http://localhost:4000/api/"
+URL = 'mongodb+srv://12am:everyday@cluster0.hqmvo.mongodb.net/'
 MAX_PRIORITY = 3 # from 1
 
-r = requests.get(URL + "getbooking")
-if r.status_code != 200:
-    raise Exception("Error")
+client = pymongo.MongoClient(URL)
+db = client['vaccine']
 
-booking = r.json()["booking"]
+booking = list(db['bookings'].find())
 
 persons = [ [i['currentstatus'],
              i['gender']=='Male',
@@ -27,18 +27,18 @@ persons_priority = [[] for _ in range(MAX_PRIORITY)]
 for i, p in enumerate(priority.tolist()):
     persons_priority[p-1].append(i)
 
-confirmed = dict()
+confirmed_dict = dict()
 for i, j in enumerate(chain(*persons_priority)):
     #print(i, j)
-    confirmed[j] = {**booking[j], **{'token': i+1}}
-    confirmed[j].pop('_id', None)
-    confirmed[j].pop('createdAt', None)
-    confirmed[j].pop('updatedAt', None)
-    confirmed[j].pop('__v', None)
+    confirmed_dict[j] = {**booking[j], **{'token': i+1}}
+    confirmed_dict[j].pop('createdAt', None)
+    confirmed_dict[j].pop('updatedAt', None)
+    confirmed_dict[j].pop('__v', None)
 
-#import json
-#with open('test.json','w') as f:
-    #json.dump({"confirmed":confirmed}, f)
+confirmed = [confirmed_dict[i] for i in sorted(confirmed_dict)]
 
-r = requests.post(URL + "addconfirmed", data = {"confirmed":confirmed})
-print(r.status_code, r.text)
+db['confirmed'].insert_many(confirmed)
+
+## to check
+#for i in db['confirmed'].find():
+    #print(i)
