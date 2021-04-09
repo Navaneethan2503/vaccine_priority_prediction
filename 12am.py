@@ -37,7 +37,7 @@ for i, j in enumerate(chain(*persons_priority)):
 
 confirmed = [confirmed_dict[i] for i in sorted(confirmed_dict)]
 
-db['confirmed'].insert_many(confirmed)
+db['confirmeds'].insert_many(confirmed)
 
 ## to check
 #for i in db['confirmed'].find():
